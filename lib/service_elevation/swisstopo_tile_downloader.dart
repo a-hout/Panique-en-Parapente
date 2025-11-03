@@ -12,7 +12,6 @@ class SwisstopoTileDownloader {
   {
     final bbox = "$minLon,$minLat,$maxLon,$maxLat"; //create string from bounding box coordinates to pass as parameter to stac api
     final url = Uri.parse('$stacBaseUrl?bbox=$bbox'); //url in full
-    print("Url: $url");
     final response = await http.get(url);
 
     if (response.statusCode != 200) {
@@ -68,6 +67,7 @@ class SwisstopoTileDownloader {
   downloads all tiles from api
   */
   {
+    Directory(outputDirectory).deleteSync(recursive: true); //should cache existing tiles if they're reused here
     final files = <File>[];
     for (var metadata in metadatas)
     {
