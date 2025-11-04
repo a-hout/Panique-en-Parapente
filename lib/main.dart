@@ -34,8 +34,7 @@ Future<void> main(List<String> args) async {
   print('Downloaded ${files.length} files');
   print('\n\n');
   for (var i = 0; i < files.length; i++) {
-    final loader = GeotiffLoader();
-    final data = loader.loadGeoTiff(files[i], tiles[i].bbox);
+    final data = GeotiffLoader.loadGeoTiff(files[i], tiles[i].bbox);
     print(
       'BBox: ${tiles[i].bbox.minLat} , ${tiles[i].bbox.maxLat}, ${tiles[i].bbox.minLon}, ${tiles[i].bbox.maxLon}',
     );

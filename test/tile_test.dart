@@ -40,8 +40,7 @@ void main() {
 
       final files = await downloader.downloadTiles(tiles, './test_tiles');
 
-      final loader = GeotiffLoader();
-      final data = loader.loadGeoTiff(files[0], tiles[0].bbox);
+      final data = GeotiffLoader.loadGeoTiff(files[0], tiles[0].bbox);
       expect(data.elevations, isNotNull);
       expect(data.bounds, equals(tiles[0].bbox));
     });
@@ -64,8 +63,7 @@ void main() {
       final files = await downloader.downloadTiles(tiles, './test_tiles');
 
       //first tile, but should be the only tile
-      final loader = GeotiffLoader();
-      final data = loader.loadGeoTiff(files[0], tiles[0].bbox);
+      final data = GeotiffLoader.loadGeoTiff(files[0], tiles[0].bbox);
       expect(data.rows, equals(2000));
       expect(data.cols, equals(2000));
 

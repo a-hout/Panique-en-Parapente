@@ -5,7 +5,7 @@ import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_data.dart';
 
 class GeotiffLoader {
-  ElevationData loadGeoTiff(File file, BoundingBox bounds) {
+  static ElevationData loadGeoTiff(File file, BoundingBox bounds) {
     final bytes = file.readAsBytesSync();
     final elevationsImage = img.decodeTiff(
       bytes,
