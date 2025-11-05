@@ -10,4 +10,10 @@ class GpsPosition {
     required this.altitude,
     DateTime? time,
   }) : time = DateTime.now(); //generate tiem at constructor init
+
+  void setPosition()
+  /*
+  calls the GPS service of the device to get current position
+  */
+  {}
 }
