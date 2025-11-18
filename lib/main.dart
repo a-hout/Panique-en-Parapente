@@ -1,7 +1,11 @@
 import 'package:panique_en_parapente/algo/algo1d.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';
+import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
+import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
+import 'package:panique_en_parapente/service_elevation/swisstopo_tile_downloader.dart';
 
 Future<void> main(List<String> args) async {
+  /*
   final user = GpsPosition(
     lat: 46.93048164361448,
     lon: 6.724780335855535,
@@ -42,4 +46,34 @@ Future<void> main(List<String> args) async {
   print(
     "Can the user reach Rochefort from Le Soliat? Difference in altitude: ${algo3.runNoObstacle()}",
   );
+  */
+
+  /*
+  final downloader = SwisstopoTileDownloader();
+  final bbox = SwisstopoTileDownloader.calculateBbox(47.047312, 6.953335, 6.0);
+  final tiles = await downloader.fetchTileUrls(
+    bbox.minLon,
+    bbox.minLat,
+    bbox.maxLon,
+    bbox.maxLat,
+  );
+
+  final files = await downloader.downloadTiles(tiles, './test_tiles');
+  */
+  final userPos = GpsPosition(lat: 47.047312, lon: 6.953335, altitude: 770.3);
+  final waypointPos = GpsPosition(
+    lat: 47.014925,
+    lon: 7.005801,
+    altitude: 465.5,
+  );
+  final algo = Algo1D(
+    waypointPos: waypointPos,
+    userPos: userPos,
+    f: 10,
+    maillage: 0.5,
+    provider: ElevationProvider.swisstopo,
+    tilePath: './test_tiles',
+  );
+  final result = await algo.runWithObstacle();
+  print('Climb needed: $result m');
 }

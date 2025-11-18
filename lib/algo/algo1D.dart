@@ -1,6 +1,8 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:panique_en_parapente/service_elevation/elevation_data.dart';
+import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
 import 'package:panique_en_parapente/service_elevation/geotiff_loader.dart';
 import 'package:path/path.dart' as path;
 import 'package:panique_en_parapente/gps/gps_position.dart';
@@ -12,70 +14,95 @@ class Algo1D {
   GpsPosition userPos;
   final double maillage;
   final String tilePath;
+  int f; //fineness, about 9 or 10 normally for parapente
+  final ElevationProvider
+  provider; //for now, it's either swisstopo or the simulation
 
   Algo1D({
     required this.waypointPos,
     required this.userPos,
     required this.maillage,
     required this.tilePath,
+    required this.f,
+    required this.provider,
   });
 
   double runNoObstacle()
-  /*
-  algorithm method without taking into account the elevation data
-  returns a double
-  */
+  //algorithm method without taking into account the elevation data
+  //returns a double
+  //
+  //we draw a linear function between the user and the waypoint's position
+  //we check if the point at waypoint is lower than the waypoint
+  //if it is, return delta the user must climb + safety margin
   {
-    //we draw a linear function between the user and the waypoint's position
-    //we check if the point at waypoint is lower than the waypoint
-    //if it is, return delta the user must climb + safety margin
-
-    const f = 9; //fineness ratio for glide parapente
-    const safetyMargin = 3; //3 meter safety margin ok?
     return -(1 / f) * getHaversineDistance() +
         userPos.altitude -
-        waypointPos.altitude -
-        safetyMargin;
+        waypointPos.altitude;
   }
 
-  double runWithObstacle()
-  /*
-  algorithm method with elevation data consideration
-  returns a double
-  */
+  Future<double> runWithObstacle() async
+  //algorithm method with elevation data consideration
+  //returns a double
+  //async because of _fetchTile
   {
     // U**********W   each star is a point that tests the elevation at that point
     // we divide the distance into n points and iterate over each distance from user to waypoint
 
-    double distance = getHaversineDistance();
-    double maxUnsafeDelta = double
-        .infinity; //we want to get the lowest possible altitude difference (either positive or negative)
-    for (int i = 1; i < distance / maillage; i++)
+    final distance = getHaversineDistance();
+    final numPoints = (distance / maillage)
+        .floor(); //number of points used to test the algorithm
+    print("Num points: $numPoints");
+
+    double maxClimbNeeded = double
+        .negativeInfinity; //we want to get the lowest possible altitude difference (either positive or negative)
+    for (
+      int i = 1;
+      i <= numPoints;
+      i++
+    ) //TODO change this to a compute Isolate funciton
     {
-      double altitude = 0.0; // TODO actual elevation of the point!
-      GpsPosition currentPoint = GpsPosition(lat: , lon: , altitude: altitude);
+      final t = i / numPoints;
+      print("t = $t\n");
 
-      ElevationData tile = _fetchTile(currentPoint);
+      ///position at point t relative to user and waypoint position
+      final lat = userPos.lat + (waypointPos.lat - userPos.lat) * t;
+      final lon = userPos.lon + (waypointPos.lon - userPos.lon) * t;
 
-      double delta = getPointTileDelta(currentPoint, tile) ;
-      if (delta < maxUnsafeDelta)
-      {
-        maxUnsafeDelta = delta;
+      ///altitude at point t
+      final distanceTraveled = distance * t;
+      final glideAltitude = userPos.altitude - (distanceTraveled / f);
+
+      final currentPoint = GpsPosition(
+        lat: lat,
+        lon: lon,
+        altitude: glideAltitude,
+      );
+
+      final tile = await _fetchTile(
+        currentPoint,
+      ); //get tile where the point is located
+      final terrainElevation = tile.getElevationGPS(
+        lat,
+        lon,
+      ); //exact elevation at lat and lon of the point
+
+      final delta = glideAltitude - terrainElevation;
+
+      if (delta < 0) {
+        maxClimbNeeded = max(
+          maxClimbNeeded,
+          -delta,
+        ); //inverted sign because we want to return the height the user must climb, not how much he is missing
       }
     }
-
-    //we draw a line between the user and the waypoint
-    //we divide the line into gps points so that they are about 0.5m equidistant
-    //for each point, we check if the elevation data of that tile at the point's position is lower than the altitude of the point
-    //we keep maxDelta in memory and return it to indicate how much the user must climb
-    return maxUnsafeDelta;
+    return maxClimbNeeded == double.negativeInfinity
+        ? 0.0
+        : maxClimbNeeded; //if no climb needed, then just return 0
   }
 
   double getHaversineDistance()
-  /*
-  Get the distance between the user and the waypoint's position using the haversine formula
-  Returns a double
-  */
+  //Get the distance between the user and the waypoint's position using the haversine formula
+  //Returns a double
   {
     double degreeToRadians = pi / 180.0;
     double dx = (waypointPos.lon - userPos.lon) * degreeToRadians;
@@ -90,38 +117,45 @@ class Algo1D {
     return r * c;
   }
 
-  Future<ElevationData> _fetchTile(GpsPosition pos) async {
-    final dir = Directory(tilePath);
-    final List<FileSystemEntity> entities = await dir.list().toList();
-    for (int i = 0; i < entities.length; i++) {
-      final boundsName =
-          path.basenameWithoutExtension(entities[i].path).split('-')
-              as List<double>;
+  Future<ElevationData> _fetchTile(GpsPosition pos) async
+  //asynchronous fetching of the tile
+  {
+    switch (provider) {
+      case ElevationProvider.swisstopo:
+        final dir = Directory(tilePath);
+        final entities = await dir.list().toList();
+        for (int i = 0; i < entities.length; i++) {
+          final boundsName = path
+              .basenameWithoutExtension(entities[i].path)
+              .split('-');
 
-      final bounds = BoundingBox(
-        boundsName[0],
-        boundsName[1],
-        boundsName[2],
-        boundsName[3],
-      );
-      if (pos.lat > bounds.minLat &&
-          pos.lat < bounds.maxLat &&
-          pos.lon > bounds.minLon &&
-          pos.lon < bounds.maxLon) {
-        File file = File(entities[i].path);
-        ElevationData tile = GeotiffLoader.loadGeoTiff(file, bounds);
-      }
-      //if no tile, then what? download file from api? takes time and this should be fast
+          final bounds = BoundingBox(
+            double.parse(boundsName[0]),
+            double.parse(boundsName[1]),
+            double.parse(boundsName[2]),
+            double.parse(boundsName[3]),
+          );
+          if (pos.lat >= bounds.minLat &&
+              pos.lat <= bounds.maxLat &&
+              pos.lon >= bounds.minLon &&
+              pos.lon <= bounds.maxLon) {
+            return GeotiffLoader.loadGeoTiff(File(entities[i].path), bounds);
+          }
+        }
+        throw Exception(
+          'No tile at ${pos.lat}, ${pos.lon}',
+        ); //if no tile, then user has gone off-grid and is on his own, should return an empty tile
+
+      case ElevationProvider.sim:
+        break; //TODO return elevation data based on a few parameters
     }
-    return await tile;
+    throw Exception("Invalid service provider: $provider");
   }
 
-  double getPointTileDelta(GpsPosition point, ElevationData tile)
-  /*
-  get the difference in altitude between an algorithmic point and the tile it's in
-  */
+  Future<void> loadTilesInPath() async
+  //Loads into memory all tiles between the user and the waypoint, since tiles are 1km^2, we can sample every km
   {
-    return point.altitude - tile.getElevationGPS(point.lat, point.lon);
+    
   }
 
   /*
