@@ -32,38 +32,4 @@ class GeotiffLoader {
     );
     return matrix;
   }
-
-  /*
-  ElevationData loadMultipleGeoTiff(List<File> files) {
-    // for each file, create bounds for large matrix (lowest latmin and lonmin, to highest latmax and lonmax)
-    // then, for each file add the elevation data in the CORRECT order
-    // at the end, create large matrix with corresponding elevation data, rows and columns, same resolution and large bounding box
-    double minLat = double.infinity;
-    double minLon = double.infinity;
-    double maxLat = double.negativeInfinity;
-    double maxLon = double.negativeInfinity;
-    for (int i = 0; i < files.length; i++) {
-      final boundsName =
-          basenameWithoutExtension(files[i].path).split('-') as List<double>;
-
-      final bounds = BoundingBox(
-        boundsName[0],
-        boundsName[1],
-        boundsName[2],
-        boundsName[3],
-      );
-
-      minLat = min(minLat, bounds.minLat);
-      minLon = min(minLon, bounds.minLat);
-      maxLat = max(maxLat, bounds.maxLat);
-      maxLon = max(maxLon, bounds.maxLon);
-    }
-
-    int currentRow = 0;
-
-    files.sort((a, b) => )
-
-    return largeMatrix;
-  }
-  */
 }

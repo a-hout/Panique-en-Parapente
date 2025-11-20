@@ -31,6 +31,9 @@ class SwisstopoTileDownloader {
 
     final urls = <TileMetadata>[];
     for (var feature in features) {
+      final parts = feature['id'].split('_').last.split('-');
+      final int x = int.parse(parts[0]);
+      final int y = int.parse(parts[1]);
       final bboxList =
           feature['bbox']
               as List; //we want to name the tile files after their bounding box coordinates, make it easier to transform into elevation data
@@ -49,7 +52,7 @@ class SwisstopoTileDownloader {
       for (var entry in assets.entries) {
         if (entry.key.endsWith('.tif')) {
           final href = entry.value['href'] as String;
-          urls.add(TileMetadata(href, bboxTile));
+          urls.add(TileMetadata(href, x, y, bboxTile));
           break; //we only want the .tif link
         }
       }
@@ -71,7 +74,7 @@ class SwisstopoTileDownloader {
     }
 
     final filename =
-        '${metadata.bbox.minLat}-${metadata.bbox.maxLat}-${metadata.bbox.minLon}-${metadata.bbox.maxLon}.tif'; //naming convention makes it easier to get bounding box from the name, don't have to hold all data in ram that way
+        '${metadata.x}-${metadata.y}-${metadata.bbox.minLat}-${metadata.bbox.maxLat}-${metadata.bbox.minLon}-${metadata.bbox.maxLon}.tif'; //naming convention makes it easier to get bounding box and grid index from the name, don't have to hold all data in ram that way
     final file = File(path.join(outputDirectory, filename));
 
     await file.create(recursive: true);
