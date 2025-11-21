@@ -1,10 +1,28 @@
 import 'package:panique_en_parapente/algo/algo1d.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';
+import 'package:panique_en_parapente/program_controller.dart';
 import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
 import 'package:panique_en_parapente/service_elevation/swisstopo_tile_downloader.dart';
 
 Future<void> main(List<String> args) async {
+  print("TEST");
+  /*
+  final f = 10;
+  final r = 20.0;
+  final waypointPos = GpsPosition(
+    lat: 47.014925,
+    lon: 7.005801,
+    altitude: 465.5,
+  ); //field next to marin centre
+  final controller = ProgramController(f, r, waypointPos);
+
+  controller.start();
+
+  await Future.delayed(Duration(minutes: 5));
+  controller.end();
+  */
+
   /*
   final user = GpsPosition(
     lat: 46.93048164361448,
@@ -60,6 +78,8 @@ Future<void> main(List<String> args) async {
 
   final files = await downloader.downloadTiles(tiles, './test_tiles');
   */
+
+  /*
   final userPos = GpsPosition(lat: 47.047312, lon: 6.953335, altitude: 770.3);
   final waypointPos = GpsPosition(
     lat: 47.014925,
@@ -76,4 +96,5 @@ Future<void> main(List<String> args) async {
   );
   final result = await algo.runWithObstacle();
   print('Climb needed: $result m');
+  */
 }

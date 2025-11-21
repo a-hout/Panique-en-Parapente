@@ -32,4 +32,32 @@ class GeotiffLoader {
     );
     return matrix;
   }
+
+  static ElevationData loadGeoTiffByLV95(String grid, String tilesPath) {
+    final dir = Directory(tilesPath);
+    final fileEntity = dir.listSync().firstWhere(
+      (entity) => entity.path.contains(grid) && entity.path.endsWith('.tif'),
+      orElse: () => throw Exception("Tile not found for grid: $grid"),
+    );
+
+    final File file = File(fileEntity.path);
+
+    final regex = RegExp(r"(\d+\.\d+)");
+    final matches = regex.allMatches(fileEntity.uri.pathSegments.last).toList();
+
+    if (matches.length < 4) {
+      throw Exception(
+        "Filename does not contain enough coordinate data: ${file.path}",
+      );
+    }
+
+    final bounds = BoundingBox(
+      double.parse(matches[0].group(0)!), // MinLat
+      double.parse(matches[1].group(0)!), // MaxLat
+      double.parse(matches[2].group(0)!), // MinLon
+      double.parse(matches[3].group(0)!), // MaxLon
+    );
+
+    return loadGeoTiff(file, bounds);
+  }
 }
