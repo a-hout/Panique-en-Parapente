@@ -1,36 +1,37 @@
-import 'package:flutter/material.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_data.dart';
 import 'package:panique_en_parapente/service_elevation/geotiff_loader.dart';
 
 class TileController {
-  Map<String, ElevationData>
-  tilesInMemory; //key is LV95 coordinate, value is the filename of the tile
+  final Map<String, ElevationData> tilesInMemory =
+      {}; //key is LV95 coordinate, value is the filename of the tile
+  final String tileFolder;
+  final int endX, endY; //waypoint LV95 grid in integer
 
-  int endX, endY;
+  TileController({
+    required this.tileFolder,
+    required this.endX,
+    required this.endY,
+  });
 
-  TileController(): endX = 0, endY = 0,tilesInMemory = {};
+  Future<void> run(int startX, int startY) async {
+    final tilesInPath = bresenhamAlgorithm(startX, startY);
+    final required = tilesInPath.map((p) => "${p[1]}-${p[0]}").toSet();
 
-  void run() {
-    List<List<int>> tilesInPath = bresenhamAlgorithm();
+    tilesInMemory.removeWhere(
+      (k, v) => !required.contains(k),
+    ); //remove unused tiles
 
-    Set<String> tilesRequired = tilesInPath
-        .map((p) => "${p[0]}_${p[1]}")
-        .toSet();
-
-    List<String> tilesToRemove = tilesInMemory.keys
-        .where((tile) => !tilesRequired.contains(tile))
+    //load missing tiles in parallel, IO tile laoding is the biggest bottleneck so far in terms of performance
+    final missing = required
+        .where((t) => !tilesInMemory.containsKey(t))
         .toList();
+    final futures = missing.map(
+      (t) => GeotiffLoader.loadGeoTiffByLV95(t, tileFolder),
+    );
+    final loaded = await Future.wait(futures);
 
-    List<String> tilesToAdd = tilesRequired
-        .where((tile) => !tilesInMemory.containsKey(tile))
-        .toList();
-
-    for (var tile in tilesToRemove) {
-      tilesInMemory.remove(tile);
-    }
-    for (var tile in tilesToAdd) //this operation could take time. async?
-    {
-      tilesInMemory[tile] = GeotiffLoader.loadGeoTiffByLV95(tile, )
+    for (int i = 0; i < missing.length; i++) {
+      tilesInMemory[missing[i]] = loaded[i];
     }
   }
 

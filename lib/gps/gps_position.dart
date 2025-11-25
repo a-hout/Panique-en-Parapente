@@ -1,4 +1,5 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:lv95/lv95.dart';
 
 class GpsPosition {
   double lat;
@@ -11,7 +12,16 @@ class GpsPosition {
     required this.lat,
     required this.lon,
     required this.altitude,
-  }) : heading = headingUser ?? 0.0; //only the user should have a heading
+    this.heading = 0.0,
+  });
+
+  static Future<GpsPosition> fromDevice() async
+  ///round about way of calling a constructor for the user asynchronously since futures dont exist for constructors
+  {
+    final pos = GpsPosition(lat: 0, lon: 0, altitude: 0);
+    await pos.setActualPosition();
+    return pos;
+  }
 
   Future<void> setActualPosition() async
   ///calls the GPS service of the device to get current position
@@ -35,5 +45,16 @@ class GpsPosition {
     lon = pos.longitude;
     altitude = pos.altitude;
     heading = pos.heading;
+  }
+
+  List<int> getLV95()
+  ///get the integer part of the lv95 coords
+  {
+    final wgs84 = LatLng(lat, lon);
+    final xy = LV95.fromWGS84(wgs84);
+    final endX = (xy.x / 1000).floor();
+    final endY = (xy.y / 1000).floor();
+
+    return [endX, endY];
   }
 }

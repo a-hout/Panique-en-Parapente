@@ -1,28 +1,41 @@
-import 'package:panique_en_parapente/algo/algo1d.dart';
-import 'package:panique_en_parapente/gps/gps_position.dart';
-import 'package:panique_en_parapente/program_controller.dart';
-import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
-import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
-import 'package:panique_en_parapente/service_elevation/swisstopo_tile_downloader.dart';
+import 'package:flutter/material.dart';
+import 'package:panique_en_parapente/ui/waypoint_picker_screen.dart';
 
 Future<void> main(List<String> args) async {
-  print("TEST");
+  WidgetsFlutterBinding.ensureInitialized(); //geolocator doesnt work if it's not bound
+  runApp(MaterialApp(home: WaypointPickerScreen()));
   /*
   final f = 10;
-  final r = 20.0;
+  final r = 1.0;
   final waypointPos = GpsPosition(
     lat: 47.014925,
     lon: 7.005801,
     altitude: 465.5,
   ); //field next to marin centre
-  final controller = ProgramController(f, r, waypointPos);
+  final userPos = await GpsPosition.fromDevice();
+  final appDir = await getApplicationDocumentsDirectory();
+  final tileFolder = '${appDir.path}/tiles/';
+  final dir = Directory(tileFolder);
+  if (!await dir.exists()) {
+    await dir.create(recursive: true);
+  }
+  final controller = ProgramController(
+    f: f,
+    r: r,
+    waypointPos: waypointPos,
+    userPos: userPos,
+    tileFolder: tileFolder,
+  );
+
+  print("Downloading tiles...");
+  await controller.downloadTiles();
+  print("Download complete!");
 
   controller.start();
 
   await Future.delayed(Duration(minutes: 5));
   controller.end();
   */
-
   /*
   final user = GpsPosition(
     lat: 46.93048164361448,

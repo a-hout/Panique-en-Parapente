@@ -1,20 +1,14 @@
-import 'dart:collection';
 import 'dart:math';
-
 import 'package:panique_en_parapente/service_elevation/elevation_data.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
-import 'package:panique_en_parapente/service_elevation/geotiff_loader.dart';
-import 'package:path/path.dart' as path;
 import 'package:panique_en_parapente/gps/gps_position.dart';
-import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
-import 'dart:io';
 
 class Algo1D {
   final GpsPosition waypointPos;
-  GpsPosition userPos;
+  final GpsPosition userPos;
   final double maillage;
   final String tilePath;
-  int f; //fineness, about 9 or 10 normally for parapente
+  final int f; //fineness, about 9 or 10 normally for parapente
   final ElevationProvider
   provider; //for now, it's either swisstopo or the simulation
 
@@ -40,7 +34,7 @@ class Algo1D {
         waypointPos.altitude;
   }
 
-  Future<double> runWithObstacle() async
+  Future<double> runWithObstacle(Map<String, ElevationData> tileMap) async
   //algorithm method with elevation data consideration
   //returns a double
   //async because of _fetchTile
@@ -48,10 +42,13 @@ class Algo1D {
     // U**********W   each star is a point that tests the elevation at that point
     // we divide the distance into n points and iterate over each distance from user to waypoint
 
+    // get current location of user, very important!
+    await userPos.setActualPosition();
+
     final distance = getHaversineDistance();
+    print("Distance between user and waypoint");
     final numPoints = (distance / maillage)
         .floor(); //number of points used to test the algorithm
-    print("Num points: $numPoints");
 
     double maxClimbNeeded = double
         .negativeInfinity; //we want to get the lowest possible altitude difference (either positive or negative)
@@ -59,10 +56,9 @@ class Algo1D {
       int i = 1;
       i <= numPoints;
       i++
-    ) //TODO change this to a compute Isolate funciton
+    ) //TODO change this to a compute Isolate funciton?
     {
       final t = i / numPoints;
-      print("t = $t\n");
 
       ///position at point t relative to user and waypoint position
       final lat = userPos.lat + (waypointPos.lat - userPos.lat) * t;
@@ -78,14 +74,21 @@ class Algo1D {
         altitude: glideAltitude,
       );
 
-      final tile = await _fetchTile(
-        currentPoint,
-      ); //get tile where the point is located
+      final lookupGrid =
+          "${currentPoint.getLV95()[1]}-${currentPoint.getLV95()[0]}";
+      final tile = tileMap[lookupGrid]; //get tile where the point is located
+      if (tile == null) {
+        throw Exception('Tile not loaded: $lookupGrid'); //shouldnt happen
+      }
+
       final terrainElevation = tile.getElevationGPS(
         lat,
         lon,
       ); //exact elevation at lat and lon of the point
 
+      print(
+        'Glide: $glideAltitude, Terrain: $terrainElevation, Lat: $lat, Lon: $lon',
+      );
       final delta = glideAltitude - terrainElevation;
 
       if (delta < 0) {
@@ -117,6 +120,7 @@ class Algo1D {
     return r * c;
   }
 
+  /*
   Future<ElevationData> _fetchTile(GpsPosition pos) async
   //asynchronous fetching of the tile
   {
@@ -151,12 +155,11 @@ class Algo1D {
     }
     throw Exception("Invalid service provider: $provider");
   }
+  */
 
   Future<void> loadTilesInPath() async
   //Loads into memory all tiles between the user and the waypoint, since tiles are 1km^2, we can sample every km
-  {
-    
-  }
+  {}
 
   /*
   void plotAlgo(int dimension)

@@ -47,6 +47,7 @@ void main() {
 
     test('Le Soliat correct height', () async {
       final downloader = SwisstopoTileDownloader();
+
       final bbox = SwisstopoTileDownloader.calculateBbox(
         46.92891181685898,
         6.72484189994648,
@@ -59,7 +60,6 @@ void main() {
         bbox.maxLon,
         bbox.maxLat,
       );
-
       final files = await downloader.downloadTiles(tiles, './test_tiles');
 
       //first tile, but should be the only tile

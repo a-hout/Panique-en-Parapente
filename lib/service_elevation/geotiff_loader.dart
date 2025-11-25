@@ -33,31 +33,48 @@ class GeotiffLoader {
     return matrix;
   }
 
-  static ElevationData loadGeoTiffByLV95(String grid, String tilesPath) {
+  static Future<ElevationData> loadGeoTiffByLV95(
+    String grid,
+    String tilesPath,
+  ) async {
+    //get file from lv95 grid
     final dir = Directory(tilesPath);
-    final fileEntity = dir.listSync().firstWhere(
-      (entity) => entity.path.contains(grid) && entity.path.endsWith('.tif'),
-      orElse: () => throw Exception("Tile not found for grid: $grid"),
+    final entities = await dir.list().toList();
+    final fileEntity = entities.firstWhere(
+      (e) => e.path.contains('$grid-') && e.path.endsWith('.tif'),
+      orElse: () => throw Exception("Tile not found: $grid"),
     );
 
-    final File file = File(fileEntity.path);
-
-    final regex = RegExp(r"(\d+\.\d+)");
-    final matches = regex.allMatches(fileEntity.uri.pathSegments.last).toList();
-
-    if (matches.length < 4) {
-      throw Exception(
-        "Filename does not contain enough coordinate data: ${file.path}",
-      );
-    }
+    //get bounds from file
+    final parts = fileEntity.uri.pathSegments.last
+        .replaceAll('.tif', '')
+        .split('-');
+    if (parts.length != 6) throw Exception("Bad filename: ${fileEntity.path}");
 
     final bounds = BoundingBox(
-      double.parse(matches[0].group(0)!), // MinLat
-      double.parse(matches[1].group(0)!), // MaxLat
-      double.parse(matches[2].group(0)!), // MinLon
-      double.parse(matches[3].group(0)!), // MaxLon
+      double.parse(parts[2]),
+      double.parse(parts[3]),
+      double.parse(parts[4]),
+      double.parse(parts[5]),
     );
 
-    return loadGeoTiff(file, bounds);
+    //asynchronously get matrix from image
+    final bytes = await File(fileEntity.path).readAsBytes();
+    final image = img.decodeTiff(bytes)!;
+    final elevations = Float32List(image.height * image.width);
+
+    for (int i = 0; i < image.height; i++) {
+      for (int j = 0; j < image.width; j++) {
+        elevations[i * image.width + j] = image.getPixel(j, i).r.toDouble();
+      }
+    }
+
+    return ElevationData(
+      elevations: elevations,
+      rows: image.height,
+      cols: image.width,
+      resolution: 0.5,
+      bounds: bounds,
+    );
   }
 }
