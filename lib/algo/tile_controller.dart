@@ -50,7 +50,13 @@ class TileController {
     int error = dx - dy;
 
     while (true) {
-      tilesInPath.add([x, y]);
+      //margin of 1 tile around path
+      for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+          tilesInPath.add([x + i, y + j]);
+        }
+      }
+      //tilesInPath.add([x, y]);
       if ((x == endX) && (y == endY)) {
         break; //can't do it in wihle, straight lines are a problem
       }
@@ -72,6 +78,7 @@ class TileController {
       }
     }
 
-    return tilesInPath;
+    //to set then back to list to prevent duplicates
+    return tilesInPath.toSet().map((t) => t).toList();
   }
 }

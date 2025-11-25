@@ -42,11 +42,7 @@ class Algo1D {
     // U**********W   each star is a point that tests the elevation at that point
     // we divide the distance into n points and iterate over each distance from user to waypoint
 
-    // get current location of user, very important!
-    await userPos.setActualPosition();
-
     final distance = getHaversineDistance();
-    print("Distance between user and waypoint");
     final numPoints = (distance / maillage)
         .floor(); //number of points used to test the algorithm
 
@@ -86,9 +82,8 @@ class Algo1D {
         lon,
       ); //exact elevation at lat and lon of the point
 
-      print(
-        'Glide: $glideAltitude, Terrain: $terrainElevation, Lat: $lat, Lon: $lon',
-      );
+      //print('Terrain: $terrainElevation');
+
       final delta = glideAltitude - terrainElevation;
 
       if (delta < 0) {
