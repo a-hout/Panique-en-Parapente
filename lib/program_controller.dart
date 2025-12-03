@@ -14,20 +14,20 @@ class ProgramController {
   final double r;
   final GpsPosition waypointPos;
 
+  double climbDelta = 0;
   bool isProcessing =
       false; //flag that signals if this tick is still running or not
   Timer? timer; //? doesn't have to be instanced by constructor
 
+  /// user input: fineness f, radius r, waypointPos
+  /// init of the program with all relevant classes setup properly
   ProgramController({
     required this.f,
     required this.r,
     required this.waypointPos,
     required this.userPos,
     required this.tileFolder,
-  })
-  /// user input: fineness f, radius r, waypointPos
-  /// init of the program with all relevant classes setup properly
-  {
+  }) {
     tileController = TileController(
       tileFolder: tileFolder,
       endX: waypointPos.getLV95()[0],
@@ -44,9 +44,8 @@ class ProgramController {
     );
   }
 
-  void start()
   /// will start the program
-  {
+  void start() {
     print("/!\\ START PROGRAM\n\n");
 
     tick();
@@ -56,10 +55,9 @@ class ProgramController {
     }); //callback will call the tick method every 10 seconds
   }
 
-  Future<void> tick() async
   /// will execute the algorithm every x seconds (default: 10 seconds)
   /// asynchronous to prevent this function to be called again if it takes >x seconds to compute
-  {
+  Future<void> tick() async {
     if (isProcessing) return;
     isProcessing = true;
 
@@ -74,8 +72,8 @@ class ProgramController {
       ); //tiles HAVe to load otherwise race condition with algorithm
 
       //algo1d runs the algorithm with the provided tiles
-      double delta = await algo1d.runWithObstacle(tileController.tilesInMemory);
-      print("User must climb ${delta} meters");
+      climbDelta = await algo1d.runWithObstacle(tileController.tilesInMemory);
+      print("User must climb ${climbDelta} meters");
     } catch (e) {
       print("Error during program: $e");
     } finally {
@@ -83,13 +81,13 @@ class ProgramController {
     }
   }
 
-  void end()
   /// will end the program
-  {
+  void end() {
     timer?.cancel(); //if there is a timer, cancel it
     print("\n\n/!\\ END PROGRAM"); //time flies
   }
 
+  ///will download the tiles
   Future<void> downloadTiles() async {
     final downloader = SwisstopoTileDownloader();
     final bbox = SwisstopoTileDownloader.calculateBbox(
@@ -97,6 +95,7 @@ class ProgramController {
       waypointPos.lon,
       r,
     );
+
     final metadata = await downloader.fetchTileUrls(
       bbox.minLon,
       bbox.minLat,

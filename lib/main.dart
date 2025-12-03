@@ -3,8 +3,20 @@ import 'package:panique_en_parapente/ui/waypoint_picker_screen.dart';
 
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized(); //geolocator doesnt work if it's not bound
-  runApp(MaterialApp(home: WaypointPickerScreen()));
+  runApp(
+    MaterialApp(
+      home: WaypointPickerScreen(),
+    ),
+  ); //we start at the waypoint picker screen
+}
   /*
+
+
+
+
+
+  convert to unit test all below
+
   final f = 10;
   final r = 1.0;
   final waypointPos = GpsPosition(
@@ -110,4 +122,3 @@ Future<void> main(List<String> args) async {
   final result = await algo.runWithObstacle();
   print('Climb needed: $result m');
   */
-}

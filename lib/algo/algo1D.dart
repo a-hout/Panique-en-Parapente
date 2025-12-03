@@ -45,15 +45,9 @@ class Algo1D {
     final distance = getHaversineDistance();
     final numPoints = (distance / maillage)
         .floor(); //number of points used to test the algorithm
-
     double maxClimbNeeded = double
         .negativeInfinity; //we want to get the lowest possible altitude difference (either positive or negative)
-    for (
-      int i = 1;
-      i <= numPoints;
-      i++
-    ) //TODO change this to a compute Isolate funciton?
-    {
+    for (int i = 1; i <= numPoints; i++) {
       final t = i / numPoints;
 
       ///position at point t relative to user and waypoint position
@@ -114,63 +108,4 @@ class Algo1D {
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     return r * c;
   }
-
-  /*
-  Future<ElevationData> _fetchTile(GpsPosition pos) async
-  //asynchronous fetching of the tile
-  {
-    switch (provider) {
-      case ElevationProvider.swisstopo:
-        final dir = Directory(tilePath);
-        final entities = await dir.list().toList();
-        for (int i = 0; i < entities.length; i++) {
-          final boundsName = path
-              .basenameWithoutExtension(entities[i].path)
-              .split('-');
-
-          final bounds = BoundingBox(
-            double.parse(boundsName[0]),
-            double.parse(boundsName[1]),
-            double.parse(boundsName[2]),
-            double.parse(boundsName[3]),
-          );
-          if (pos.lat >= bounds.minLat &&
-              pos.lat <= bounds.maxLat &&
-              pos.lon >= bounds.minLon &&
-              pos.lon <= bounds.maxLon) {
-            return GeotiffLoader.loadGeoTiff(File(entities[i].path), bounds);
-          }
-        }
-        throw Exception(
-          'No tile at ${pos.lat}, ${pos.lon}',
-        ); //if no tile, then user has gone off-grid and is on his own, should return an empty tile
-
-      case ElevationProvider.sim:
-        break; //TODO return elevation data based on a few parameters
-    }
-    throw Exception("Invalid service provider: $provider");
-  }
-  */
-
-  Future<void> loadTilesInPath() async
-  //Loads into memory all tiles between the user and the waypoint, since tiles are 1km^2, we can sample every km
-  {}
-
-  /*
-  void plotAlgo(int dimension)
-  /*
-  Function to visualize algo's
-  */
-  {
-    switch (dimension)
-    {
-      case 1:
-
-      case 2:
-        //plot elevation data
-
-
-    }
-  }
-  */
 }
