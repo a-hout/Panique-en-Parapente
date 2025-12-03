@@ -36,6 +36,7 @@ class _LiveScreenState extends State<LiveScreen> {
     setState(() {
       altitude = widget.controller.userPos.altitude;
       distance = widget.controller.algo1d.getHaversineDistance();
+      climbDelta = widget.controller.climbDelta;
     });
   }
 

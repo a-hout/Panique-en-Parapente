@@ -11,6 +11,7 @@ class WaypointPickerScreen extends StatefulWidget {
 class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
   LatLng? waypoint;
   double radius = 5.0; // km
+  int fineness = 9;
   final MapController mapController = MapController();
 
   @override
@@ -23,7 +24,7 @@ class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
             child: FlutterMap(
               mapController: mapController,
               options: MapOptions(
-                initialCenter: LatLng(46.52, 6.63), // Lausanne
+                initialCenter: LatLng(46.997406, 6.938268), //HE-ARC
                 initialZoom: 13,
                 onTap: (_, pos) => setState(() => waypoint = pos),
               ),
@@ -66,6 +67,17 @@ class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: [
+                Text('Fineness: $fineness'),
+                Slider(
+                  value: fineness.toDouble(),
+                  min: 6,
+                  max: 14,
+                  divisions: 8,
+                  label: '$fineness',
+                  onChanged: (v) => setState(() {
+                    fineness = v.toInt();
+                  }),
+                ),
                 Text('Radius: ${radius.toStringAsFixed(1)} km'),
                 Slider(
                   value: radius,
@@ -92,7 +104,11 @@ class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => DownloadScreen(waypoint: waypoint!, radius: radius),
+        builder: (_) => DownloadScreen(
+          waypoint: waypoint!,
+          radius: radius,
+          fineness: fineness,
+        ),
       ),
     );
   }
