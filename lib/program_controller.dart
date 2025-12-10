@@ -72,7 +72,10 @@ class ProgramController {
       ); //tiles HAVe to load otherwise race condition with algorithm
 
       //algo1d runs the algorithm with the provided tiles
-      climbDelta = await algo1d.runWithObstacle(tileController.tilesInMemory);
+      climbDelta = await algo1d.runWithObstacle(
+        tileController.tilesInMemory,
+        null,
+      );
       print("User must climb ${climbDelta} meters");
     } catch (e) {
       print("Error during program: $e");

@@ -34,7 +34,10 @@ class Algo1D {
         waypointPos.altitude;
   }
 
-  Future<double> runWithObstacle(Map<String, ElevationData> tileMap) async
+  Future<double> runWithObstacle(
+    Map<String, ElevationData> tileMap,
+    ElevationData? testTile,
+  ) async
   //algorithm method with elevation data consideration
   //returns a double
   //async because of _fetchTile
@@ -63,10 +66,12 @@ class Algo1D {
         lon: lon,
         altitude: glideAltitude,
       );
-
+      print(tileMap.keys);
       final lookupGrid =
           "${currentPoint.getLV95()[1]}-${currentPoint.getLV95()[0]}";
-      final tile = tileMap[lookupGrid]; //get tile where the point is located
+      final tile =
+          testTile ??
+          tileMap[lookupGrid]; //get tile where the point is located, test tile is loaded when passed in argument (for unit test)
       if (tile == null) {
         throw Exception('Tile not loaded: $lookupGrid'); //shouldnt happen
       }

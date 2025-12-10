@@ -63,14 +63,13 @@ class SwisstopoTileDownloader {
             break; //we only want the .tif link
           }
         }
-
-        final links = json['links'] as List;
-        nextUrl = null;
-        for (var link in links) {
-          if (link['rel'] == 'next') {
-            nextUrl = link['href'];
-            break;
-          }
+      }
+      final links = json['links'] as List;
+      nextUrl = null;
+      for (var link in links) {
+        if (link['rel'] == 'next') {
+          nextUrl = link['href'];
+          break;
         }
       }
     }

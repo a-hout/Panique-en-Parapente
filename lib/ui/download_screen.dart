@@ -1,4 +1,4 @@
-import 'dart:io';
+
 
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -41,43 +41,27 @@ class _DownloadScreenState extends State<DownloadScreen> {
     try {
       final appDir = await getApplicationDocumentsDirectory();
       final tileFolder = '${appDir.path}/tiles/';
-      final dir = Directory(tileFolder);
-      
-      //fetch existing tiles
-      final existing = <String>{};
-      if (await dir.exists()) {
-        await for (var entity in dir.list()) {
-          existing.add(entity.uri.pathSegments.last);
-        }
-      }
-      
+
       final downloader = SwisstopoTileDownloader();
       final bbox = SwisstopoTileDownloader.calculateBbox(
         widget.waypoint.latitude,
         widget.waypoint.longitude,
         widget.radius,
       );
-      
+
       final metadata = await downloader.fetchTileUrls(
         bbox.minLon,
         bbox.minLat,
         bbox.maxLon,
         bbox.maxLat,
       );
-      
-      //remove existing tiles from download list
-      final toDownload = metadata.where((m) {
-        final filename = '${m.x}-${m.y}-${m.bbox.minLat}-${m.bbox.maxLat}-${m.bbox.minLon}-${m.bbox.maxLon}.tif';
-        return !existing.contains(filename);
-      }).toList();
-      
-      setState(() => total = toDownload.length);
-      
-      for (int i = 0; i < toDownload.length; i++) {
-        await downloader.downloadTile(toDownload[i], tileFolder);
+
+      setState(() => total = metadata.length);
+
+      for (int i = 0; i < metadata.length; i++) {
+        await downloader.downloadTile(metadata[i], tileFolder);
         setState(() => progress = i + 1);
       }
-
 
       //init controller
       final userPos = await GpsPosition.fromDevice();
@@ -86,7 +70,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         lon: widget.waypoint.longitude,
         altitude: 0, //not known
       );
-      
+
       final waypointGrid = waypointPosTemp.getLV95();
       final waypointTile = await GeotiffLoader.loadGeoTiffByLV95(
         "${waypointGrid[1]}-${waypointGrid[0]}",
