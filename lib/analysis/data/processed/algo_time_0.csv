@@ -1,0 +1,21 @@
+Source.Name,distance,elapsed_ms,climb needed
+algo_time_0.csv,1,5,542.2085535
+algo_time_0.csv,5,7,1297.671246
+algo_time_0.csv,10,4,2317.179188
+algo_time_0.csv,25,11,3253.709034
+algo_time_1.csv,1,1,542.2085535
+algo_time_1.csv,5,3,1297.671246
+algo_time_1.csv,10,5,2317.179188
+algo_time_1.csv,25,12,3253.709034
+algo_time_2.csv,1,0,542.2085535
+algo_time_2.csv,5,2,1297.671246
+algo_time_2.csv,10,5,2317.179188
+algo_time_2.csv,25,12,3253.709034
+algo_time_3.csv,1,0,542.2085535
+algo_time_3.csv,5,4,1297.671246
+algo_time_3.csv,10,9,2317.179188
+algo_time_3.csv,25,19,3253.709034
+algo_time_4.csv,1,0,542.2085535
+algo_time_4.csv,5,2,1297.671246
+algo_time_4.csv,10,6,2317.179188
+algo_time_4.csv,25,13,3253.709034

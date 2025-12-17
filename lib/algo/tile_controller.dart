@@ -35,9 +35,8 @@ class TileController {
     }
   }
 
-  List<List<int>> bresenhamAlgorithm(int startX, int startY)
   ///returns the tiles which are between the user and the waypoint
-  {
+  List<List<int>> bresenhamAlgorithm(int startX, int startY) {
     List<List<int>> tilesInPath = [];
     int dx = (endX - startX).abs();
     int dy = (endY - startY).abs();

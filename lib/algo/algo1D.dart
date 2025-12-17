@@ -34,14 +34,13 @@ class Algo1D {
         waypointPos.altitude;
   }
 
+  ///algorithm method with elevation data consideration
+  ///returns a double
+  ///async because of _fetchTile
   Future<double> runWithObstacle(
     Map<String, ElevationData> tileMap,
     ElevationData? testTile,
-  ) async
-  //algorithm method with elevation data consideration
-  //returns a double
-  //async because of _fetchTile
-  {
+  ) async {
     // U**********W   each star is a point that tests the elevation at that point
     // we divide the distance into n points and iterate over each distance from user to waypoint
 
@@ -66,7 +65,7 @@ class Algo1D {
         lon: lon,
         altitude: glideAltitude,
       );
-      print(tileMap.keys);
+
       final lookupGrid =
           "${currentPoint.getLV95()[1]}-${currentPoint.getLV95()[0]}";
       final tile =
