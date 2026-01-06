@@ -22,7 +22,7 @@ df = pd.read_csv("data/processed/algo_time_0.csv")
 distances = sorted(df["distance"].unique())
 grouped_data = [df[df["distance"] == d]["elapsed_ms"].values for d in distances]
 
-# Create figure
+# create figure
 fig, ax = plt.subplots(figsize=(10, 5))
 
 # boxplot
@@ -67,7 +67,7 @@ ax.set_axisbelow(True)
 # use actual distances for x ticks
 ax.set_xticks(positions)
 ax.set_xticklabels(distances)
-ax.set_xlim(-1, 30)  # More breathing room on left, extend right
+ax.set_xlim(-1, 30)
 
 # y axis setting
 y_max = max([max(data) for data in grouped_data]) * 1.1

@@ -83,7 +83,7 @@ void main() {
 
       final climbNeeded = await algo.runWithObstacle({}, tile);
 
-      // Should need massive climb (wall at 999999m)
+      //should need massive climb (wall at 999999m)
       expect(
         climbNeeded,
         greaterThan(50000.0),

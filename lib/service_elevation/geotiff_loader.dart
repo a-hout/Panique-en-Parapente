@@ -23,6 +23,24 @@ class GeotiffLoader {
       }
     }
 
+    /*
+    for testing, another way to do the loading, it's slower
+    if (elevationsImage == null) {
+      throw Exception("this should never happen but finally rid of the errors");
+    }
+
+    final elevations = Float32List(
+      elevationsImage.width * elevationsImage.height,
+    );
+    if (elevationsImage.data is img.ImageDataFloat32) {
+      final rawFloats = (elevationsImage.data as img.ImageDataFloat32)
+          .toUint8List()
+          .buffer
+          .asFloat32List();
+      elevations.setAll(0, rawFloats);
+    }
+    */
+
     final matrix = ElevationData(
       elevations: elevations,
       rows: elevationsImage.height,
