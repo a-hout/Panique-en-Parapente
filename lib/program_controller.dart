@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:panique_en_parapente/algo/algo1d.dart';
 import 'package:panique_en_parapente/algo/tile_controller.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';
@@ -13,6 +14,7 @@ class ProgramController {
   final int f;
   final double r;
   final GpsPosition waypointPos;
+  final FlutterTts tts = FlutterTts();
 
   double climbDelta = 0;
   bool isProcessing =
@@ -76,7 +78,10 @@ class ProgramController {
         tileController.tilesInMemory,
         null,
       );
-      print("User must climb ${climbDelta} meters");
+
+      await tts.setLanguage('en-US');
+      await tts.speak('Climb ${climbDelta.round()} meters');
+      //print("User must climb ${climbDelta} meters");
     } catch (e) {
       print("Error during program: $e");
     } finally {

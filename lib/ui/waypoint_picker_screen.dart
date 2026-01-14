@@ -20,6 +20,25 @@ class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
       appBar: AppBar(title: Text('Set Waypoint')),
       body: Column(
         children: [
+          Container(
+            padding: EdgeInsets.all(16),
+            color: Colors.white,
+            child: Column(
+              children: [
+                Image.asset('assets/logo.png', height: 60),
+                SizedBox(height: 8),
+                Text('Alex Houttuin', style: TextStyle(fontSize: 16)),
+                Text(
+                  'Panique en Parapente',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Tous droits réservés',
+                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: FlutterMap(
               mapController: mapController,
