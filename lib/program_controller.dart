@@ -17,6 +17,9 @@ class ProgramController {
   final FlutterTts tts = FlutterTts();
 
   double climbDelta = 0;
+  double?
+  altitudeOffset; //gps offset from user inputted altitude (geolocation altitude is unreliable on its own)
+
   bool isProcessing =
       false; //flag that signals if this tick is still running or not
   Timer? timer; //? doesn't have to be instanced by constructor
@@ -65,8 +68,11 @@ class ProgramController {
 
     try {
       //user position update
-      userPos.setActualPosition();
+      await userPos.setActualPosition();
 
+      if (altitudeOffset != null) {
+        userPos.altitude = userPos.altitude - altitudeOffset!;
+      }
       //tile controller updates with bresenham and loads in memory the tiles
       await tileController.run(
         userPos.getLV95()[0],
@@ -81,7 +87,6 @@ class ProgramController {
 
       await tts.setLanguage('en-US');
       await tts.speak('Climb ${climbDelta.round()} meters');
-      //print("User must climb ${climbDelta} meters");
     } catch (e) {
       print("Error during program: $e");
     } finally {
@@ -93,6 +98,12 @@ class ProgramController {
   void end() {
     timer?.cancel(); //if there is a timer, cancel it
     print("\n\n/!\\ END PROGRAM"); //time flies
+  }
+
+  ///calibrates the altitude between take off and ellipsoid
+  void calibrateAltitude(double trueAltitude) {
+    userPos.setActualPosition(); //get ellipsoid altitude before take off
+    altitudeOffset = userPos.altitude - trueAltitude;
   }
 
   ///will download the tiles

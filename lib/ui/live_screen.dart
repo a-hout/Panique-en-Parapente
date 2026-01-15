@@ -4,8 +4,9 @@ import 'dart:async';
 
 class LiveScreen extends StatefulWidget {
   final ProgramController controller;
+  double? calibratedAltitude;
 
-  LiveScreen({required this.controller});
+  LiveScreen({required this.controller, required this.calibratedAltitude});
 
   @override
   State<LiveScreen> createState() => _LiveScreenState();
@@ -21,6 +22,11 @@ class _LiveScreenState extends State<LiveScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.calibratedAltitude != null) {
+      widget.controller.userPos.setActualPosition().then((_) {
+        widget.controller.calibrateAltitude(widget.calibratedAltitude!);
+      });
+    }
     //ui update every second
     uiTimer = Timer.periodic(Duration(seconds: 1), (_) => _updateUI());
   }

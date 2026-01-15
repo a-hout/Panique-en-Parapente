@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:panique_en_parapente/service_elevation/geotiff_loader.dart';
@@ -30,6 +28,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
   bool downloading = true;
   ProgramController? controller;
   String? error;
+  double? calibratedAltitude;
 
   @override
   void initState() {
@@ -128,11 +127,40 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 SizedBox(height: 16),
                 Text('Error: $error'),
               ] else ...[
-                Icon(Icons.check_circle, color: Colors.green, size: 64),
-                SizedBox(height: 24),
-                Text('Ready to launch!'),
-                SizedBox(height: 24),
-                ElevatedButton(onPressed: _launch, child: Text('Launch')),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Current Altitude (m)',
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter your altitude',
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        final parsed = double.tryParse(value);
+                        setState(() {
+                          calibratedAltitude = parsed;
+                        });
+                      },
+                    ),
+
+                    SizedBox(height: 16),
+
+                    if (calibratedAltitude == null)
+                      Text(
+                        'Warning: GPS altitude unreliable. Use variometer. Set at take off site.',
+                        style: TextStyle(color: Colors.orange, fontSize: 12),
+                      ),
+
+                    SizedBox(height: 32),
+
+                    ElevatedButton(
+                      onPressed: calibratedAltitude == null ? null : _launch,
+                      child: Text('Launch'),
+                    ),
+                  ],
+                ),
               ],
             ],
           ),
@@ -144,7 +172,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
   void _launch() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => LiveScreen(controller: controller!)),
+      MaterialPageRoute(
+        builder: (_) => LiveScreen(
+          controller: controller!,
+          calibratedAltitude: calibratedAltitude,
+        ),
+      ),
     );
   }
 }
