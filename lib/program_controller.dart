@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:panique_en_parapente/algo/algo1d.dart';
+import 'package:panique_en_parapente/algo/algo_1d.dart';
 import 'package:panique_en_parapente/algo/tile_controller.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';

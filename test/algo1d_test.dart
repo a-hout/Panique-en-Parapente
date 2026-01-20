@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:panique_en_parapente/algo/algo1d.dart';
+import 'package:panique_en_parapente/algo/algo_1d.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_sim.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';

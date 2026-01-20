@@ -1,7 +1,7 @@
 // measure the algorithm time to complete when the waypoint is at certain distances (1km, 5km, 10km, 25km)
 // since there are flutter dependencies, better to run this file with flutter run -d windows -t lib\analysis\plot_algo_time.dart
 import 'dart:io';
-import 'package:panique_en_parapente/algo/algo1D.dart';
+import 'package:panique_en_parapente/algo/algo_1d.dart';
 import 'package:panique_en_parapente/analysis/utils/save_to_csv.dart';
 import 'package:panique_en_parapente/analysis/utils/tile_download_util.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';

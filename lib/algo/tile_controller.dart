@@ -25,13 +25,22 @@ class TileController {
     final missing = required
         .where((t) => !tilesInMemory.containsKey(t))
         .toList();
-    final futures = missing.map(
-      (t) => GeotiffLoader.loadGeoTiffByLV95(t, tileFolder),
-    );
+    //final futures = missing.map(
+    //  (t) => GeotiffLoader.loadGeoTiffByLV95(t, tileFolder),
+    //);
+    final futures = missing.map((t) async {
+      try {
+        return await GeotiffLoader.loadGeoTiffByLV95(t, tileFolder);
+      } catch (_) {
+        return null;
+      }
+    });
     final loaded = await Future.wait(futures);
 
     for (int i = 0; i < missing.length; i++) {
-      tilesInMemory[missing[i]] = loaded[i];
+      final data = loaded[i];
+      if (data == null) continue;
+      tilesInMemory[missing[i]] = data;
     }
   }
 

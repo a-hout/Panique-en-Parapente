@@ -20,13 +20,6 @@
 ## Running code (preferably on phone)
 `flutter run`
 
-## Running on an emulator of an android device
-`flutter emulators --launch Medium_Phone_API_36.1`
-
-`flutter run`
-
-Allows to spoof location which is very useful in our case! Note that the altitude cannot be set in the emulator.
-
 ## Testing code
 All tests must pass!
 
