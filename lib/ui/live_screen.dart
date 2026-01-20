@@ -4,7 +4,7 @@ import 'dart:async';
 
 class LiveScreen extends StatefulWidget {
   final ProgramController controller;
-  double? calibratedAltitude;
+  final double? calibratedAltitude;
 
   LiveScreen({required this.controller, required this.calibratedAltitude});
 
@@ -14,8 +14,10 @@ class LiveScreen extends StatefulWidget {
 
 class _LiveScreenState extends State<LiveScreen> {
   double climbDelta = 0;
+  double altitudeWaypoint = 0;
   double distance = 0;
   double altitude = 0;
+  double? calibratedAltitude = 0;
   bool running = false;
   Timer? uiTimer;
 
@@ -43,6 +45,7 @@ class _LiveScreenState extends State<LiveScreen> {
       altitude = widget.controller.userPos.altitude;
       distance = widget.controller.algo1d.getHaversineDistance();
       climbDelta = widget.controller.climbDelta;
+      altitudeWaypoint = widget.controller.altitudeWaypoint;
     });
   }
 
@@ -82,6 +85,13 @@ class _LiveScreenState extends State<LiveScreen> {
               label: 'Climb Required',
               value: '${climbDelta.toStringAsFixed(1)} m',
               color: climbDelta > 0 ? Colors.orange : Colors.green,
+            ),
+            SizedBox(height: 16),
+            _StatCard(
+              icon: Icons.paragliding,
+              label: 'Altitude at Waypoint',
+              value: '${altitudeWaypoint.toStringAsFixed(1)} m',
+              color: altitudeWaypoint > 0 ? Colors.green : Colors.red,
             ),
             SizedBox(height: 32),
             ElevatedButton(

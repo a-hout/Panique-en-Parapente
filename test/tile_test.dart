@@ -20,7 +20,7 @@ void main() {
         bbox.maxLat,
       );
 
-      final files = await downloader.downloadTiles(tiles, './test_tiles');
+      await downloader.downloadTiles(tiles, './test_tiles');
       var empty = await Directory('./test_tiles').list().isEmpty;
       expect(empty, isFalse); //folder should not be empty
     });

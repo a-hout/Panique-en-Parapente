@@ -42,7 +42,6 @@ class GpsPosition {
     lat = pos.latitude;
     lon = pos.longitude;
     altitude = pos.altitude;
-    print(altitude);
     heading = pos.heading;
   }
 

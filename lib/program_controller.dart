@@ -17,6 +17,7 @@ class ProgramController {
   final FlutterTts tts = FlutterTts();
 
   double climbDelta = 0;
+  double altitudeWaypoint = 0;
   double?
   altitudeOffset; //gps offset from user inputted altitude (geolocation altitude is unreliable on its own)
 
@@ -51,8 +52,6 @@ class ProgramController {
 
   /// will start the program
   void start() {
-    print("/!\\ START PROGRAM\n\n");
-
     tick();
 
     timer = Timer.periodic(Duration(seconds: 10), (timer) {
@@ -80,13 +79,25 @@ class ProgramController {
       ); //tiles HAVe to load otherwise race condition with algorithm
 
       //algo1d runs the algorithm with the provided tiles
-      climbDelta = await algo1d.runWithObstacle(
+      final result = await algo1d.runWithObstacle(
         tileController.tilesInMemory,
         null,
       );
 
-      await tts.setLanguage('en-US');
-      await tts.speak('Climb ${climbDelta.round()} meters');
+      climbDelta = result.$1;
+      altitudeWaypoint = result.$2;
+
+      await tts.setLanguage(
+        'en-GB',
+      ); //british voices sound more professional than the american ones
+
+      await tts.setSpeechRate(
+        0.45,
+      ); //slow down speech to make it easier to understand
+
+      await tts.speak(
+        'Climb ${climbDelta.round()} meters. Altitude at waypoint will be ${altitudeWaypoint.round()} meters.',
+      );
     } catch (e) {
       print("Error during program: $e");
     } finally {
@@ -97,7 +108,6 @@ class ProgramController {
   /// will end the program
   void end() {
     timer?.cancel(); //if there is a timer, cancel it
-    print("\n\n/!\\ END PROGRAM"); //time flies
   }
 
   ///calibrates the altitude between take off and ellipsoid

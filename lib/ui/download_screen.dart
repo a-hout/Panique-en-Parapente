@@ -149,7 +149,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
                     if (calibratedAltitude == null)
                       Text(
-                        'Warning: GPS altitude unreliable. Use variometer. Set at take off site.',
+                        'Warning: GPS altitude unreliable. Use an altimeter. Set at take off site.',
                         style: TextStyle(color: Colors.orange, fontSize: 12),
                       ),
 

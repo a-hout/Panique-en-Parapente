@@ -42,7 +42,7 @@ void main() {
 
       final climbNeeded = await algo.runWithObstacle({}, tile);
 
-      expect(climbNeeded, moreOrLessEquals(12.0, epsilon: 1.5)); //100/9
+      expect(climbNeeded.$1, moreOrLessEquals(12.0, epsilon: 1.5)); //100/9
     });
 
     test('single ridge, high wall, precision test', () async {
@@ -85,7 +85,7 @@ void main() {
 
       //should need massive climb (wall at 999999m)
       expect(
-        climbNeeded,
+        climbNeeded.$1,
         greaterThan(50000.0),
       ); //this way we know the algorithm can be precise when needed
     });
@@ -129,7 +129,7 @@ void main() {
 
       //highest ridge is at 1200m, but user is at 1500m and losing altitude
       //user would need some climb or be marginal
-      expect(climbNeeded, greaterThanOrEqualTo(0.0));
+      expect(climbNeeded.$1, greaterThanOrEqualTo(0.0));
     });
 
     test('fineness ratio validation', () async {
@@ -170,8 +170,8 @@ void main() {
       final climbNeeded = await algo.runWithObstacle({}, tile);
 
       //distance about 900m, glide to about 300m, terrain at 500m so user need 200m climb
-      expect(climbNeeded, greaterThan(150.0));
-      expect(climbNeeded, lessThan(250.0));
+      expect(climbNeeded.$1, greaterThan(150.0));
+      expect(climbNeeded.$1, lessThan(250.0));
     });
   });
 }

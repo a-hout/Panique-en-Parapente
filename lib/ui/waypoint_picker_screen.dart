@@ -73,7 +73,7 @@ class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
                         point: waypoint!,
                         radius: radius * 1000, // meters
                         useRadiusInMeter: true,
-                        color: Colors.blue.withOpacity(0.3),
+                        color: Colors.blue.withValues(alpha: 0.3),
                         borderColor: Colors.blue,
                         borderStrokeWidth: 2,
                       ),
@@ -101,8 +101,8 @@ class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
                 Slider(
                   value: radius,
                   min: 1,
-                  max: 10,
-                  divisions: 18,
+                  max: 20,
+                  divisions: 38,
                   label: '${radius.toStringAsFixed(1)} km',
                   onChanged: (v) => setState(() => radius = v),
                 ),

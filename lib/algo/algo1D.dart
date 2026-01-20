@@ -35,20 +35,20 @@ class Algo1D {
   }
 
   ///algorithm method with elevation data consideration
-  ///returns a double
+  ///returns two doubles
   ///async because of _fetchTile
-  Future<double> runWithObstacle(
+  Future<(double climbDelta, double altitudeWaypoint)> runWithObstacle(
     Map<String, ElevationData> tileMap,
     ElevationData? testTile,
   ) async {
     // U**********W   each star is a point that tests the elevation at that point
     // we divide the distance into n points and iterate over each distance from user to waypoint
-
     final distance = getHaversineDistance();
     final numPoints = (distance / maillage)
         .floor(); //number of points used to test the algorithm
     double maxClimbNeeded = double
         .negativeInfinity; //we want to get the lowest possible altitude difference (either positive or negative)
+    double finalAltitude = 0; //altitude relative to elevation at waypoint
     for (int i = 1; i <= numPoints; i++) {
       final t = i / numPoints;
 
@@ -57,7 +57,8 @@ class Algo1D {
       final lon = userPos.lon + (waypointPos.lon - userPos.lon) * t;
 
       ///altitude at point t
-      final distanceTraveled = distance * t;
+      final distanceTraveled =
+          distance * t; //t is between a very small fractional number and 1
       final glideAltitude = userPos.altitude - (distanceTraveled / f);
 
       final currentPoint = GpsPosition(
@@ -80,8 +81,6 @@ class Algo1D {
         lon,
       ); //exact elevation at lat and lon of the point
 
-      //print('Terrain: $terrainElevation');
-
       final delta = glideAltitude - terrainElevation;
 
       if (delta < 0) {
@@ -90,10 +89,16 @@ class Algo1D {
           -delta,
         ); //inverted sign because we want to return the height the user must climb, not how much he is missing
       }
+      if (t == 1) {
+        //at waypoint
+        finalAltitude = delta;
+      }
     }
-    return maxClimbNeeded == double.negativeInfinity
-        ? 0.0
-        : maxClimbNeeded; //if no climb needed, then just return 0
+
+    return (
+      maxClimbNeeded == double.negativeInfinity ? 0.0 : maxClimbNeeded,
+      finalAltitude,
+    ); //if no climb needed, then just return 0
   }
 
   double getHaversineDistance()
