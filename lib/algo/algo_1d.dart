@@ -105,8 +105,8 @@ class Algo1D {
 
     return (
       maxClimbNeeded == double.negativeInfinity ? 0.0 : maxClimbNeeded,
-      finalAltitude,
-    ); //if no climb needed, then just return 0
+      finalAltitude + maxClimbNeeded,
+    ); //if no climb needed, then just return 0, 0
   }
 
   ///get the distance between the user and the waypoint's position using the haversine formula
