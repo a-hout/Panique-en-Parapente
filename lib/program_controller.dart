@@ -111,7 +111,7 @@ class ProgramController {
       ); //slow down speech to make it easier to understand
 
       await tts.speak(
-        'Climb ${climbDelta.round()} meters. Altitude at waypoint will be ${altitudeWaypoint.round()} meters.',
+        'Climb ${climbDelta.round()} meters. Altitude at waypoint will be ${(altitudeWaypoint + climbDelta).round()} meters.',
       );
     } catch (e) {
       print("Error during program: $e");
