@@ -7,13 +7,28 @@ import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
 import 'package:panique_en_parapente/service_elevation/swisstopo_tile_downloader.dart';
 
 class ProgramController {
+  ///Tile controller, initialized in constructor
   late final TileController tileController;
+
+  ///1D algorithm, initialized in constructor, should not be too difficult to switch with a 2D algorithm
   late final Algo1D algo1d;
+
+  ///position of user
   final GpsPosition userPos;
+
+  ///path to tiles
   final String tileFolder;
+
+  ///fineness ratio
   final int f;
+
+  ///wander radius
   final double r;
+
+  ///position of waypoint
   final GpsPosition waypointPos;
+
+  ///text to speech implementation
   final FlutterTts tts = FlutterTts();
 
   double climbDelta = 0;

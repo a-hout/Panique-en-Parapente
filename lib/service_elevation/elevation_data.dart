@@ -3,12 +3,19 @@ import 'dart:typed_data';
 import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
 
 class ElevationData {
-  final Float32List
-  elevations; //this type is more performant than the default dart lists
+  ///this type is more performant than the default dart lists
+  final Float32List elevations;
+
+  ///number of rows in matrix
   final int rows;
+
+  ///number of columns in matrix
   final int cols;
-  final double
-  resolution; //maillage, for example 0.5m so each meter will have 2 points for example
+
+  ///maillage, for example 0.5m so each meter will have 2 points
+  final double resolution;
+
+  ///bounding box of elevation data
   final BoundingBox bounds;
 
   ElevationData({
@@ -23,22 +30,16 @@ class ElevationData {
   ///float32List elements are 4 bytes each
   int get sizeBytes => elevations.lengthInBytes;
 
-  double getElevation(int row, int col)
-  /*
-  Returns elevation data at a specified grid coordinate
-  */
-  {
+  ///returns elevation data at a specified grid (row/column) coordinate
+  double getElevation(int row, int col) {
     if (row < 0 || row >= rows || col < 0 || col >= cols) {
       throw RangeError("Out of bounds: ($row, $col)");
     }
     return elevations[row * cols + col];
   }
 
-  double getElevationGPS(double lat, double lon)
-  /*
-  Returns elevation data based on GPS coordinates
-  */
-  {
+  ///returns elevation data at a specified GPS coordinate using bilinear interpolation
+  double getElevationGPS(double lat, double lon) {
     final rowF = (bounds.maxLat - lat) / bounds.height * rows;
     final colF = (lon - bounds.minLon) / bounds.width * cols;
 
@@ -55,7 +56,7 @@ class ElevationData {
       return getElevation(r, c);
     }
 
-    //this section uses biliniear interpolarisation as seen in traitement d'images I
+    //this section uses biliniear interpolation as seen in traitement d'images I
     //necessary because we want to interpolate a point if the GPS point is between actual points in the data from the provider
     final v = rowF - row;
     final u = colF - col;

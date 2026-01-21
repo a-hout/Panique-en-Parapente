@@ -4,13 +4,23 @@ import 'package:panique_en_parapente/service_elevation/elevation_factory.dart';
 import 'package:panique_en_parapente/gps/gps_position.dart';
 
 class Algo1D {
+  ///gps position of waypoint
   final GpsPosition waypointPos;
+
+  ///gps position of user
   final GpsPosition userPos;
+
+  ///resolution of a tile
   final double maillage;
+
+  ///path to tiles
   final String tilePath;
-  final int f; //fineness, about 9 or 10 normally for parapente
-  final ElevationProvider
-  provider; //for now, it's either swisstopo or the simulation
+
+  ///fineness, about 9 or 10 normally for parapente
+  final int f;
+
+  ///for now, it's either swisstopo or the simulation
+  final ElevationProvider provider;
 
   Algo1D({
     required this.waypointPos,
@@ -21,21 +31,19 @@ class Algo1D {
     required this.provider,
   });
 
-  double runNoObstacle()
-  //algorithm method without taking into account the elevation data
-  //returns a double
-  //
-  //we draw a linear function between the user and the waypoint's position
-  //we check if the point at waypoint is lower than the waypoint
-  //if it is, return delta the user must climb + safety margin
-  {
+  ///algorithm method without taking into account the elevation data
+  ///returns a double
+  ///we draw a linear function between the user and the waypoint's position
+  ///we check if the point at waypoint is lower than the waypoint
+  ///if it is, return delta the user must climb
+  double runNoObstacle() {
     return -(1 / f) * getHaversineDistance() +
         userPos.altitude -
         waypointPos.altitude;
   }
 
   ///algorithm method with elevation data consideration
-  ///returns two doubles
+  ///returns two doubles, the climb needed and the altitude at waypoint
   ///async because of _fetchTile
   Future<(double climbDelta, double altitudeWaypoint)> runWithObstacle(
     Map<String, ElevationData> tileMap,
@@ -101,10 +109,9 @@ class Algo1D {
     ); //if no climb needed, then just return 0
   }
 
-  double getHaversineDistance()
-  //Get the distance between the user and the waypoint's position using the haversine formula
-  //Returns a double
-  {
+  ///get the distance between the user and the waypoint's position using the haversine formula
+  ///returns a double
+  double getHaversineDistance() {
     double degreeToRadians = pi / 180.0;
     double dx = (waypointPos.lon - userPos.lon) * degreeToRadians;
     double dy = (waypointPos.lat - userPos.lat) * degreeToRadians;

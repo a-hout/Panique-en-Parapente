@@ -108,6 +108,7 @@ class SwisstopoTileDownloader {
   }
 
   ///calculates the bounding box needed to input into the STAC Api. Gets the position of the waypoint and roaming radius to determine the box.
+  ///similar to _createBounds by elevation_sim, but bespoke for the swisstopo tiles
   static BoundingBox calculateBbox(
     double centerLat,
     double centerLon,

@@ -2,10 +2,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:lv95/lv95.dart';
 
 class GpsPosition {
+  ///latitude position
   double lat;
+
+  ///longitude position
   double lon;
-  double altitude; //above sea levell
-  double heading; // in degrees, useful for algo2D
+
+  ///altitude from GPS (WGS84 ellipsoid so not very accurate)
+  double altitude;
+
+  /// in degrees, useful for 2D algorithm
+  double heading;
 
   GpsPosition({
     double? headingUser,

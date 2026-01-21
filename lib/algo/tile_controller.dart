@@ -2,10 +2,14 @@ import 'package:panique_en_parapente/service_elevation/elevation_data.dart';
 import 'package:panique_en_parapente/service_elevation/geotiff_loader.dart';
 
 class TileController {
-  final Map<String, ElevationData> tilesInMemory =
-      {}; //key is LV95 coordinate, value is the filename of the tile
+  ///key is LV95 coordinate, value is the elevation data of the tile
+  final Map<String, ElevationData> tilesInMemory = {};
+
+  ///path to tiles
   final String tileFolder;
-  final int endX, endY; //waypoint LV95 grid in integer
+
+  ///waypoint LV95 grid in integer
+  final int endX, endY;
 
   TileController({
     required this.tileFolder,
@@ -13,6 +17,7 @@ class TileController {
     required this.endY,
   });
 
+  ///given a starting point x and y, tiles will either get added or culled (or stay) from the map depending if they're in the bresenham path
   Future<void> run(int startX, int startY) async {
     final tilesInPath = bresenhamAlgorithm(startX, startY);
     final required = tilesInPath.map((p) => "${p[1]}-${p[0]}").toSet();
@@ -44,7 +49,7 @@ class TileController {
     }
   }
 
-  ///returns the tiles which are between the user and the waypoint
+  ///returns the tiles which are between the user and the waypoint with a buffer around the line
   List<List<int>> bresenhamAlgorithm(int startX, int startY) {
     List<List<int>> tilesInPath = [];
     int dx = (endX - startX).abs();

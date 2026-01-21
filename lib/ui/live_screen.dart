@@ -3,7 +3,10 @@ import 'package:panique_en_parapente/program_controller.dart';
 import 'dart:async';
 
 class LiveScreen extends StatefulWidget {
+  ///the controller of the program, basically the manager
   final ProgramController controller;
+
+  ///calibrated altitude is important to offset with gps altitude
   final double? calibratedAltitude;
 
   LiveScreen({required this.controller, required this.calibratedAltitude});

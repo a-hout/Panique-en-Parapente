@@ -8,8 +8,13 @@ import 'package:panique_en_parapente/service_elevation/swisstopo_tile_downloader
 import 'live_screen.dart';
 
 class DownloadScreen extends StatefulWidget {
+  ///kinda like our GpsPosition but for flutter
   final LatLng waypoint;
+
+  ///wander radius given by user
   final double radius;
+
+  ///fineness ration given by user
   final int fineness;
 
   DownloadScreen({

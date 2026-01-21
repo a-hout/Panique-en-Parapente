@@ -19,16 +19,13 @@ class ElevationSim implements ServiceElevation {
     return generateFlatTerrain(lat, lon, gridSize, resolution);
   }
 
+  ///simulated elevation data at 500m altitude
   static ElevationData generateFlatTerrain(
     double centerLat,
     double centerLon,
     int gridSize,
     double resolution,
-  )
-  /*
-  SImulated eleation data at 500m altitude
-  */
-  {
+  ) {
     final elevations = Float32List(gridSize * gridSize);
     for (int i = 0; i < elevations.length; i++) {
       elevations[i] = 500.0;
@@ -44,6 +41,7 @@ class ElevationSim implements ServiceElevation {
     );
   }
 
+  ///generates a vertical ridge in the middle
   static ElevationData generateSingleRidge(
     double centerLat,
     double centerLon,
@@ -51,11 +49,7 @@ class ElevationSim implements ServiceElevation {
     double resolution, {
     double baseElevation = 500.0,
     double ridgeElevation = 1500.0,
-  })
-  /*
-  generates a vertical ridge in the middle
-  */
-  {
+  }) {
     final elevations = Float32List(gridSize * gridSize); //init the matrix
 
     //complete base elevation for the matrix
@@ -92,6 +86,7 @@ class ElevationSim implements ServiceElevation {
     );
   }
 
+  ///generates a lot of ridges
   static ElevationData generateMultipleRidges(
     double centerLat,
     double centerLon,
@@ -197,6 +192,7 @@ class ElevationSim implements ServiceElevation {
     }
   }
 
+  ///elevation data needs a bounding box so we create a simulated one
   static BoundingBox _createBounds(
     double centerLat,
     double centerLon,

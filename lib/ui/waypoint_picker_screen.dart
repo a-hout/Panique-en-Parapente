@@ -9,9 +9,16 @@ class WaypointPickerScreen extends StatefulWidget {
 }
 
 class _WaypointPickerScreenState extends State<WaypointPickerScreen> {
+  ///waypoint position
   LatLng? waypoint;
+
+  ///wander radius with default at 5 kilometers
   double radius = 5.0; // km
+
+  ///fineness ratio with default at 9
   int fineness = 9;
+
+  ///implementation to work with a map (from flutter)
   final MapController mapController = MapController();
 
   @override

@@ -5,6 +5,7 @@ import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
 import 'package:panique_en_parapente/service_elevation/elevation_data.dart';
 
 class GeotiffLoader {
+  ///given a file and its bounding box, retrieve elevation data and return it
   static ElevationData loadGeoTiff(File file, BoundingBox bounds) {
     final bytes = file.readAsBytesSync();
     final elevationsImage = img.decodeTiff(
@@ -19,27 +20,9 @@ class GeotiffLoader {
         elevations[i * elevationsImage.width + j] = elevationsImage
             .getPixel(j, i)
             .r
-            .toDouble(); //not sure which color should extract since it's greyscale
+            .toDouble(); //extract red channel
       }
     }
-
-    /*
-    for testing, another way to do the loading, it's slower
-    if (elevationsImage == null) {
-      throw Exception("this should never happen but finally rid of the errors");
-    }
-
-    final elevations = Float32List(
-      elevationsImage.width * elevationsImage.height,
-    );
-    if (elevationsImage.data is img.ImageDataFloat32) {
-      final rawFloats = (elevationsImage.data as img.ImageDataFloat32)
-          .toUint8List()
-          .buffer
-          .asFloat32List();
-      elevations.setAll(0, rawFloats);
-    }
-    */
 
     final matrix = ElevationData(
       elevations: elevations,
@@ -51,6 +34,7 @@ class GeotiffLoader {
     return matrix;
   }
 
+  ///given an LV95 grid index and the path of tiles, retrieve the relevant elevation data
   static Future<ElevationData> loadGeoTiffByLV95(
     String grid,
     String tilesPath,
