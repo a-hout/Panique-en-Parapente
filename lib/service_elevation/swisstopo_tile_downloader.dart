@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:panique_en_parapente/service_elevation/bounding_box.dart';
@@ -114,10 +115,11 @@ class SwisstopoTileDownloader {
     double centerLon,
     double radiusKm,
   ) {
-    const latPerKm =
+    final lat = centerLat * pi / 180;
+    final latPerKm =
         1 /
-        111.32; //magic number is how much a km per degree is at switzerland latitude
-    const lonPerKm = 1 / 78.85;
+        111.23; //magic number is how much a km per degree is at switzerland latitude
+    final lonPerKm = 1 / (111.32 * cos(lat)); //111.32 times cos(phi)
 
     final latDelta = radiusKm * latPerKm;
     final lonDelta = radiusKm * lonPerKm;

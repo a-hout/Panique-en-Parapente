@@ -93,8 +93,10 @@ class _LiveScreenState extends State<LiveScreen> {
             _StatCard(
               icon: Icons.paragliding,
               label: 'Altitude at Waypoint',
-              value: '${altitudeWaypoint.toStringAsFixed(1)} m',
-              color: altitudeWaypoint > 0 ? Colors.green : Colors.red,
+              value: '${(altitudeWaypoint + climbDelta).toStringAsFixed(1)} m',
+              color: (altitudeWaypoint + climbDelta) > 0
+                  ? Colors.green
+                  : Colors.red,
             ),
             SizedBox(height: 32),
             ElevatedButton(
