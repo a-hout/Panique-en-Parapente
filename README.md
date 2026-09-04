@@ -1,5 +1,5 @@
 # Panique En Parapente
-
+Check the report for the full explication for this project.
 # User guide
 ## App install
 1. Put the app-release.apk in a folder on target phone
